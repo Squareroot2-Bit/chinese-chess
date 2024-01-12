@@ -12,14 +12,14 @@ import lombok.Getter;
  * @date 2024/1/3 5:30
  * @Author Squareroot_2
  */
-@Getter
 public class Face {
     public static final int Width = 9, Height = 10;
 
+    @Getter
     private final Color movingColor;
     private final Piece[][] face;
 
-    public Piece get(Location location) {
+    public Piece getPiece(Location location) {
         if (location.isInBoard())
             return face[location.x()][location.y()];
         else throw new ChessException("该位置不在棋盘上！");

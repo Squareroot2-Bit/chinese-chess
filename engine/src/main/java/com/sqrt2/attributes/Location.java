@@ -1,5 +1,7 @@
 package com.sqrt2.attributes;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 
 /**
@@ -12,13 +14,31 @@ public record Location(int x, int y) {
     public static final int MaxX = 8;
     public static final int MaxY = 9;
 
+    private static final int BufferSize = 21;
+    private static final int BufferOffset = 10;
+
+
+    /**
+     * @param x
+     * @param y
+     * @return 获取Location对象，若缓存区有则不创建对象
+     */
+    public static Location get(int x, int y) {
+        int xo = x + BufferOffset, yo = y + BufferOffset;
+        if (xo >= 0 && xo < BufferSize && yo >= 0 && yo < BufferSize)
+            if (LocationBuffer != null) {
+                return LocationBuffer[xo][yo];
+            }
+        return new Location(x, y);
+    }
+
     /**
      * @param x
      * @param y
      * @return 位置的改变
      */
     public Location add(int x, int y) {
-        return new Location(this.x + x, this.y + y);
+        return get(this.x + x, this.y + y);
     }
 
     /**
@@ -89,43 +109,44 @@ public record Location(int x, int y) {
         return "(" + x + "," + y + ")";
     }
 
-    public boolean equals(Location l) {
+    public boolean equals(@NotNull Location l) {
         return x == l.x && y == l.y;
     }
 
+    private static final Location[][] LocationGuardCanReach;
+    private static final Location[][] LocationMinisterCanReach;
+    /**
+     * 缓存区
+     */
+    private static final Location[][] LocationBuffer;
 
-    private static final Location[][] LocationGuardCanReach = {{
-            //Red
-            new Location(3, 9),
-            new Location(5, 9),
-            new Location(4, 8),
-            new Location(3, 7),
-            new Location(5, 7)
-    }, {    //Black
-            new Location(3, 0),
-            new Location(5, 0),
-            new Location(4, 1),
-            new Location(3, 2),
-            new Location(5, 2)
-    }};
-
-    private static final Location[][] LocationMinisterCanReach = {{
-            //Red
-            new Location(2, 9),
-            new Location(6, 9),
-            new Location(0, 7),
-            new Location(4, 7),
-            new Location(8, 7),
-            new Location(2, 5),
-            new Location(6, 5)
-    }, {    //Black
-            new Location(2, 0),
-            new Location(6, 0),
-            new Location(0, 2),
-            new Location(4, 2),
-            new Location(8, 2),
-            new Location(2, 4),
-            new Location(6, 4)
-    }};
-
+    static {
+        LocationBuffer = new Location[BufferSize][BufferSize];
+        for (int i = 0; i < BufferSize; i++) {
+            for (int j = 0; j < BufferSize; j++) {
+                LocationBuffer[i][j] =
+                        new Location(i - BufferOffset, j - BufferOffset);
+            }
+        }
+        LocationGuardCanReach = new Location[][]{{
+                //Red
+                get(3, 9), get(5, 9),
+                get(4, 8),
+                get(3, 7), get(5, 7)
+        }, {    //Black
+                get(3, 0), get(5, 0),
+                get(4, 1),
+                get(3, 2), get(5, 2)
+        }};
+        LocationMinisterCanReach = new Location[][]{{
+                //Red
+                get(2, 9), get(6, 9),
+                get(0, 7), get(4, 7), get(8, 7),
+                get(2, 5), get(6, 5)
+        }, {    //Black
+                get(2, 0), get(6, 0),
+                get(0, 2), get(4, 2), get(8, 2),
+                get(2, 4), get(6, 4)
+        }};
+    }
 }

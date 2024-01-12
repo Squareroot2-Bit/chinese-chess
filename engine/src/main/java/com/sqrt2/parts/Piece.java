@@ -2,7 +2,6 @@ package com.sqrt2.parts;
 
 import com.sqrt2.attributes.*;
 import com.sqrt2.parts.pieceimpl.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -25,14 +24,37 @@ public abstract class Piece {
      * @param location 该棋子所在位置
      * @return 该棋子在不吃子的情况下可以走到的位置
      */
-    public abstract List<Location> getMoveableLocations(Face face, Location location);
+    public List<Location> getMovableLocations(Face face, Location location) {
+        return getReachableLocations(face, location, false);
+    }
 
     /**
      * @param face     当前局面
      * @param location 该棋子所在位置
      * @return 该棋子在吃子的情况下可以走到的位置
      */
-    public abstract List<Location> getAttachableLocations(Face face, Location location);
+    public List<Location> getAssaultableLocations(Face face, Location location) {
+        return getReachableLocations(face, location, false);
+    }
+
+    /**
+     * @param face     当前局面
+     * @param location 该棋子所在位置
+     * @return 该棋子可以到达的位置
+     */
+    public List<Location> getReachableLocations(Face face, Location location) {
+        List<Location> reachableLocations = getMovableLocations(face, location);
+        reachableLocations.addAll(getAssaultableLocations(face, location));
+        return reachableLocations;
+    }
+
+    /**
+     * @param face     当前局面
+     * @param location 该棋子所在位置
+     * @param attack   是否吃子
+     * @return 该棋子可以到达的位置
+     */
+    public abstract List<Location> getReachableLocations(Face face, Location location, boolean attack);
 
     /**
      * @param piece 需要比较的棋子对象

@@ -6,6 +6,7 @@ import com.sqrt2.attributes.Name;
 import com.sqrt2.parts.Face;
 import com.sqrt2.parts.Piece;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,20 +23,31 @@ public class Guard extends Piece {
     /**
      * @param face     当前局面
      * @param location 该棋子所在位置
-     * @return 该棋子在不吃子的情况下可以走到的位置
+     * @param attack   是否吃子
+     * @return 该棋子可以到达的位置
      */
     @Override
-    public List<Location> getMoveableLocations(Face face, Location location) {
-        return null;
+    public List<Location> getReachableLocations(Face face, Location location, boolean attack) {
+        List<Location> locations = new ArrayList<>();
+        Location end;
+        for (Location vector : MovableRange) {
+            end = location.add(vector);
+            if (!end.canGuardReach(getColor())) continue;
+            Piece piece = face.getPiece(end);
+            if (attack) {
+                if (piece != null && piece.getColor() != getColor())
+                    locations.add(end);
+            } else {
+                if (piece == null)
+                    locations.add(end);
+            }
+        }
+        return locations;
     }
 
-    /**
-     * @param face     当前局面
-     * @param location 该棋子所在位置
-     * @return 该棋子在吃子的情况下可以走到的位置
-     */
-    @Override
-    public List<Location> getAttachableLocations(Face face, Location location) {
-        return null;
-    }
+    private static final Location[] MovableRange = {
+            Location.get(1, 1),
+            Location.get(-1, -1),
+            Location.get(1, -1),
+            Location.get(-1, 1)};
 }

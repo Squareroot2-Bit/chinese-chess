@@ -6,6 +6,9 @@ import com.sqrt2.attributes.Location;
 import com.sqrt2.attributes.Name;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @ClassName Face
  * @Description
@@ -15,15 +18,54 @@ import lombok.Getter;
 public class Face {
     public static final int Width = 9, Height = 10;
 
+    /**
+     * 轮到走棋的一方颜色
+     */
     @Getter
     private final Color movingColor;
     private final Piece[][] face;
 
+    /**
+     * @param location 棋盘上的某个位置
+     * @return 若该位置在棋盘上，返回该位置上的棋子
+     */
     public Piece getPiece(Location location) {
         if (location.isInBoard())
             return face[location.x()][location.y()];
         else throw new ChessException("该位置不在棋盘上！");
     }
+
+    /**
+     * @param location 棋盘上某位置
+     * @param piece    将该棋子置于位置上
+     */
+    public void setPiece(Location location, Piece piece) {
+        if (location.isInBoard())
+            face[location.x()][location.y()] = piece;
+        else throw new ChessException("该位置不在棋盘上！");
+    }
+
+    /**
+     * @param from 将位于该位置上的棋子移动
+     * @param to   移动到该位置上
+     * @return 返回移动后的新局面
+     */
+    public Face move(Location from, Location to) {
+        Piece fromPiece = getPiece(from);
+        if (fromPiece == null)
+            throw new ChessException("没有棋子要被移动！");
+        if (fromPiece.getColor() != movingColor)
+            throw new ChessException("该方不能移动棋子！");
+        List<Location> reachableLocations =
+                fromPiece.getReachableLocations(this, from);
+        if (reachableLocations.stream().anyMatch(it -> it.equals(to))) {
+            Face newFace = new Face(this);
+            newFace.setPiece(to, fromPiece);
+            newFace.setPiece(from, null);
+            return newFace;
+        } else throw new ChessException("棋子不能移动到该位置！");
+    }
+
 
     private static final Piece[][] InitialFace;
 
@@ -69,8 +111,46 @@ public class Face {
         InitialFace[8][6] = Piece.get(Color.Red, Name.Pawn);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        String string;
+        Piece piece;
+        for (int j = 0; j < Height; j++) {
+            for (int i = 0; i < Width; i++) {
+                piece = face[i][j];
+                if (piece == null) {
+                    stringBuilder.append(" ");
+                } else {
+                    string = piece.getName().toString().substring(0, 1);
+                    switch (piece.getColor()) {
+                        case Red -> stringBuilder.append(string.toUpperCase());
+                        case Black -> stringBuilder.append(string.toLowerCase());
+                    }
+                }
+            }
+            stringBuilder.append('\n');
+        }
+        string = "It's " + movingColor + "'s turn to play.";
+        stringBuilder.append(string).append('\n');
+        return stringBuilder.toString();
+    }
+
     public Face() {
         this(Color.Red, InitialFace);
+    }
+
+    /**
+     * 拷贝构造函数
+     *
+     * @param oldFace 旧的局面
+     */
+    public Face(Face oldFace) {
+        movingColor = oldFace.getMovingColor() == Color.Red ? Color.Black : Color.Red;
+        face = new Piece[Width][Height];
+        for (int i = 0; i < Width; i++) {
+            System.arraycopy(oldFace.face[i], 0, face[i], 0, Height);
+        }
     }
 
     public Face(Color movingColor, Piece[][] face) {

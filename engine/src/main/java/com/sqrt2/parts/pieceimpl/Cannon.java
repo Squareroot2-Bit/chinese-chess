@@ -23,26 +23,6 @@ public class Cannon extends Piece {
     /**
      * @param face     当前局面
      * @param location 该棋子所在位置
-     * @return 该棋子在不吃子的情况下可以走到的位置
-     */
-    @Override
-    public List<Location> getMovableLocations(Face face, Location location) {
-        return null;
-    }
-
-    /**
-     * @param face     当前局面
-     * @param location 该棋子所在位置
-     * @return 该棋子在吃子的情况下可以走到的位置
-     */
-    @Override
-    public List<Location> getAssaultableLocations(Face face, Location location) {
-        return null;
-    }
-
-    /**
-     * @param face     当前局面
-     * @param location 该棋子所在位置
      * @param attack   是否吃子
      * @return 该棋子可以到达的位置
      */
@@ -66,14 +46,14 @@ public class Cannon extends Piece {
                 if (attack) {
                     if (movingTag[i] == 2 &&
                         piece != null && piece.getColor() != getColor()) {
-                        location.add(end);
+                        locations.add(end);
                     }
                 } else {
                     if (movingTag[i] == 0 && piece == null)
                         locations.add(end);
                 }
-                movingRange[i].add(movingDirection[i]);
-            } while (movingTag[i] >= 2);
+                movingRange[i] = movingRange[i].add(movingDirection[i]);
+            } while (movingTag[i] < 2);
         }
         return locations;
     }

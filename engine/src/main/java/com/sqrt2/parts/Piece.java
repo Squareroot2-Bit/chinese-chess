@@ -24,7 +24,7 @@ public abstract class Piece {
      * @param location 该棋子所在位置
      * @return 该棋子在不吃子的情况下可以走到的位置
      */
-    public List<Location> getMovableLocations(Face face, Location location) {
+    public final List<Location> getMovableLocations(Face face, Location location) {
         return getReachableLocations(face, location, false);
     }
 
@@ -33,8 +33,8 @@ public abstract class Piece {
      * @param location 该棋子所在位置
      * @return 该棋子在吃子的情况下可以走到的位置
      */
-    public List<Location> getAssaultableLocations(Face face, Location location) {
-        return getReachableLocations(face, location, false);
+    public final List<Location> getAssaultableLocations(Face face, Location location) {
+        return getReachableLocations(face, location, true);
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class Piece {
      * @param location 该棋子所在位置
      * @return 该棋子可以到达的位置
      */
-    public List<Location> getReachableLocations(Face face, Location location) {
+    public final List<Location> getReachableLocations(Face face, Location location) {
         List<Location> reachableLocations = getMovableLocations(face, location);
         reachableLocations.addAll(getAssaultableLocations(face, location));
         return reachableLocations;
@@ -60,7 +60,7 @@ public abstract class Piece {
      * @param piece 需要比较的棋子对象
      * @return 判断两个棋子是否相同
      */
-    public boolean equals(Piece piece) {
+    public final boolean equals(Piece piece) {
         return color == piece.color && name == piece.name;
     }
 

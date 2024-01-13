@@ -47,14 +47,14 @@ public class Rook extends Piece {
                 if (attack) {
                     if (movingTag[i] == 1 &&
                         piece != null && piece.getColor() != getColor()) {
-                        location.add(end);
+                        locations.add(end);
                     }
                 } else {
                     if (movingTag[i] == 0 && piece == null)
                         locations.add(end);
                 }
-                movingRange[i].add(movingDirection[i]);
-            } while (movingTag[i] >= 1);
+                movingRange[i] = movingRange[i].add(movingDirection[i]);
+            } while (movingTag[i] < 1);
         }
         return locations;
     }

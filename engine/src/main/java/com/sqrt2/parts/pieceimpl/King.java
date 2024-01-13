@@ -39,8 +39,29 @@ public class King extends Piece {
                     locations.add(end);
             }
         }
+        if (attack) {
+            Location vector = Location.get(0, 0), direction = null;
+            switch (getColor()) {
+                case Red -> direction = Location.get(0, -1);
+                case Black -> direction = Location.get(0, 1);
+            }
+            Piece piece;
+            while (true) {
+                vector = vector.add(direction);
+                end = location.add(vector);
+                if (!end.isInBoard()) break;
+                piece = face.getPiece(end);
+                if (piece != null) {
+                    if (piece.getColor() != getColor() &&
+                        piece.getName() == Name.King)
+                        locations.add(end);
+                    break;
+                }
+            }
+        }
         return locations;
     }
+
 
     private static final Location[] MovableRange = {
             Location.get(0, 1),
@@ -48,3 +69,5 @@ public class King extends Piece {
             Location.get(1, 0),
             Location.get(-1, 0)};
 }
+
+

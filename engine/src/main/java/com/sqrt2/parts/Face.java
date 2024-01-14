@@ -111,6 +111,9 @@ public class Face {
         InitialFace[8][6] = Piece.get(Color.Red, Name.Pawn);
     }
 
+    /**
+     * @return 包含当前局面以及应走棋一方信息的字符串
+     */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
